@@ -1,11 +1,11 @@
 package io.github.ryuryu_ymj.pendulum3
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxScreen
@@ -17,7 +17,7 @@ import ktx.math.vec2
 
 class PlayScreen(game: MyGame) : KtxScreen {
     private val batch = SpriteBatch()
-    private val camera = OrthographicCamera(9f, 16f)
+    private val camera = MyCamera(9f, 16f)
     private val viewport = FitViewport(
         camera.viewportWidth,
         camera.viewportHeight, camera
@@ -43,8 +43,8 @@ class PlayScreen(game: MyGame) : KtxScreen {
             box(width = 0.2f, height = stage.height, position = vec2(-stage.width / 2 - 0.1f, 0f))
         }
         pivots.add(
-            Pivot(world, 0f, -4f),
-            Pivot(world, 0f, 4f),
+            Pivot(world, 0f, -3f),
+            Pivot(world, 0f, 3f),
         )
         player = Player(world, pivots[0])
         stage.addActor(bg)
@@ -69,6 +69,19 @@ class PlayScreen(game: MyGame) : KtxScreen {
 
         world.step(1f / 60, 6, 2)
         stage.act()
+        camera.act()
+
+//        val m = 3f
+//        if (camera.position.y > player.top + m) {
+//            camera.position.y = player.top + m
+//        } else if (camera.position.y < player.y - m) {
+//            camera.position.y = player.y - m
+//        }
+        if (player.isAttachedToPivot) {
+            player.attachedPivot?.let { camera.setTarget(it.body) }
+        } else {
+            camera.setTarget(player.body)
+        }
 
         pivots.minByOrNull { it.body.position.dst2(player.body.position) }?.let {
             player.nearestPivot = it
@@ -83,3 +96,6 @@ class PlayScreen(game: MyGame) : KtxScreen {
 //        world.dispose()
     }
 }
+
+fun Actor.centerX() = x + originX
+fun Actor.centerY() = y + originY

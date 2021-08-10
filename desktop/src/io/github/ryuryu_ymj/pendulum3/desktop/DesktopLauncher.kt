@@ -9,8 +9,8 @@ object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
         val config = LwjglApplicationConfiguration().apply {
-            width = 540
-            height = 960
+            width = 450
+            height = 800
         }
         LwjglApplication(MyGame(), config)
     }

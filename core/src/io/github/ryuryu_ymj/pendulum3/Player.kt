@@ -15,11 +15,13 @@ import kotlin.math.max
 class Player(private val world: World, startPivot: Pivot) : Actor() {
     val body: Body
     var nearestPivot: Pivot = startPivot
+    var attachedPivot: Pivot? = null; private set
     private var joint: DistanceJoint? = null
-    private val speed = 8f
+    val isAttachedToPivot; get() = joint != null
+    private val speed = 5f
 
     init {
-        setSize(0.5f, 0.5f)
+        setSize(0.2f, 0.2f)
         setPosition(startPivot.x + startPivot.originX + 3f, startPivot.y + startPivot.originY)
         body = world.body(BodyDef.BodyType.DynamicBody) {
             circle(radius = width / 2) {
@@ -37,7 +39,7 @@ class Player(private val world: World, startPivot: Pivot) : Actor() {
 
     override fun act(delta: Float) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            if (nearestPivot.body !== joint?.bodyB) {
+            if (nearestPivot !== attachedPivot) {
                 attachJoint()
             } else {
                 detachJoint()
@@ -55,6 +57,7 @@ class Player(private val world: World, startPivot: Pivot) : Actor() {
             body.worldCenter.y,
             true
         )
+        setPosition(body.position.x - originX, body.position.y - originY)
     }
 
     private fun attachJoint() {
@@ -62,10 +65,12 @@ class Player(private val world: World, startPivot: Pivot) : Actor() {
         joint = body.distanceJointWith(nearestPivot.body) {
             length = max(body.position.dst(nearestPivot.body.position), 0.5f)
         }
+        attachedPivot = nearestPivot
     }
 
     private fun detachJoint() {
         joint?.let { world.destroyJoint(it) }
         joint = null
+        attachedPivot = null
     }
 }
