@@ -1,6 +1,7 @@
 package io.github.ryuryu_ymj.pendulum3
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
@@ -17,7 +18,7 @@ import ktx.math.vec2
 
 class PlayScreen(game: MyGame) : KtxScreen {
     private val batch = SpriteBatch()
-    private val camera = MyCamera(9f, 16f)
+    private val camera = OrthographicCamera(9f, 16f)
     private val viewport = FitViewport(
         camera.viewportWidth,
         camera.viewportHeight, camera
@@ -69,18 +70,9 @@ class PlayScreen(game: MyGame) : KtxScreen {
 
         world.step(1f / 60, 6, 2)
         stage.act()
-        camera.act()
 
-//        val m = 3f
-//        if (camera.position.y > player.top + m) {
-//            camera.position.y = player.top + m
-//        } else if (camera.position.y < player.y - m) {
-//            camera.position.y = player.y - m
-//        }
-        if (player.isAttachedToPivot) {
-            player.attachedPivot?.let { camera.setTarget(it.body) }
-        } else {
-            camera.setTarget(player.body)
+        if (camera.position.y < player.centerY()) {
+            camera.position.y = player.centerY()
         }
 
         pivots.minByOrNull { it.body.position.dst2(player.body.position) }?.let {
