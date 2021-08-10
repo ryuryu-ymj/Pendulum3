@@ -3,18 +3,14 @@ package io.github.ryuryu_ymj.pendulum3
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxScreen
-import ktx.box2d.body
-import ktx.box2d.box
 import ktx.box2d.createWorld
 import ktx.collections.gdxArrayOf
-import ktx.math.vec2
 
 class PlayScreen(game: MyGame) : KtxScreen {
     private val batch = SpriteBatch()
@@ -30,6 +26,7 @@ class PlayScreen(game: MyGame) : KtxScreen {
     private lateinit var world: World
     private val debugRenderer = Box2DDebugRenderer()
 
+    private val course = CourseReader()
     private lateinit var player: Player
     private val pivots = gdxArrayOf<Pivot>()
 
@@ -37,20 +34,24 @@ class PlayScreen(game: MyGame) : KtxScreen {
         camera.position.setZero()
 
         world = createWorld()
-        world.body(BodyDef.BodyType.StaticBody) {
-            box(width = stage.width, height = 0.2f, position = vec2(0f, stage.height / 2 + 0.1f))
-            box(width = stage.width, height = 0.2f, position = vec2(0f, -stage.height / 2 - 0.1f))
-            box(width = 0.2f, height = stage.height, position = vec2(stage.width / 2 + 0.1f, 0f))
-            box(width = 0.2f, height = stage.height, position = vec2(-stage.width / 2 - 0.1f, 0f))
-        }
-        pivots.add(
-            Pivot(world, 0f, -3f),
-            Pivot(world, 0f, 3f),
-        )
+        course.readCourse(1, world, stage, pivots)
+//        world.body(BodyDef.BodyType.StaticBody) {
+//            box(width = stage.width, height = 0.2f, position = vec2(0f, stage.height / 2 + 0.1f))
+//            box(width = stage.width, height = 0.2f, position = vec2(0f, -stage.height / 2 - 0.1f))
+//            box(width = 0.2f, height = stage.height, position = vec2(stage.width / 2 + 0.1f, 0f))
+//            box(width = 0.2f, height = stage.height, position = vec2(-stage.width / 2 - 0.1f, 0f))
+//        }
+//        pivots.add(
+//            Pivot(world, 0f, 4f),
+//            Pivot(world, 0f, 10f),
+//        )
         player = Player(world, pivots[0])
+
         stage.addActor(bg)
         pivots.forEach { stage.addActor(it) }
         stage.addActor(player)
+
+        camera.position.y = stage.height / 2
 
         Gdx.input.inputProcessor = stage
     }
@@ -71,7 +72,13 @@ class PlayScreen(game: MyGame) : KtxScreen {
         world.step(1f / 60, 6, 2)
         stage.act()
 
-        if (camera.position.y < player.centerY()) {
+
+        if (camera.position.y > course.height - stage.height / 2) {
+            camera.position.y = course.height - stage.height / 2
+        }
+        if (camera.position.y < player.centerY() &&
+            camera.position.y < course.height - stage.height / 2
+        ) {
             camera.position.y = player.centerY()
         }
 

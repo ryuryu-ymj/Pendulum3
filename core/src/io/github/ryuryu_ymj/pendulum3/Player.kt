@@ -49,7 +49,7 @@ class Player(private val world: World, startPivot: Pivot) : Actor() {
         val l = body.linearVelocity.len()
         val k = (l - speed) * 10
 //        println("speed:$l, force:(${-k * body.linearVelocity.x / l * body.mass},${-k * body.linearVelocity.y / l * body.mass})")
-        println(l)
+//        println(l)
         body.applyForce(
             -k * body.linearVelocity.x / l * body.mass,
             -k * body.linearVelocity.y / l * body.mass,
