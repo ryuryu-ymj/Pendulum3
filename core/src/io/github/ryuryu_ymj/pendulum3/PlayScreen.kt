@@ -12,7 +12,7 @@ import ktx.app.KtxScreen
 import ktx.box2d.createWorld
 import ktx.collections.gdxArrayOf
 
-class PlayScreen(game: MyGame) : KtxScreen {
+class PlayScreen(private val game: MyGame) : KtxScreen {
     private val batch = SpriteBatch()
     private val camera = OrthographicCamera(9f, 16f)
     private val viewport = FitViewport(
@@ -45,7 +45,7 @@ class PlayScreen(game: MyGame) : KtxScreen {
 //            Pivot(world, 0f, 4f),
 //            Pivot(world, 0f, 10f),
 //        )
-        player = Player(world, pivots[0])
+        player = Player(game.asset, world, pivots[0])
 
         stage.addActor(bg)
         pivots.forEach { stage.addActor(it) }
