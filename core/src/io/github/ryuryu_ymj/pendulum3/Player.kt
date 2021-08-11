@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
+import com.badlogic.gdx.graphics.g2d.PolygonBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
@@ -24,7 +25,7 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
     val isAttachedToPivot; get() = joint != null
     private val speed = 5f
 
-    private val effect = ParticleEffect()
+    private val trail: Trail
 
     init {
         setSize(0.4f, 0.4f)
@@ -41,14 +42,13 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
         body.applyLinearImpulse(0f, speed * body.mass, body.worldCenter.x, body.worldCenter.y, true)
         attachJoint()
 
-        effect.load(Gdx.files.internal("particle/trail.p"), asset.get<TextureAtlas>("atlas/play.atlas"))
-        effect.setPosition(centerX(), centerY())
-//        effect.setPosition(1f, 1f)
-        effect.start()
+        trail = Trail(centerX(), centerY())
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-        effect.draw(batch)
+//        batch.end()
+        trail.draw(batch)
+//        batch.begin()
     }
 
     override fun act(delta: Float) {
@@ -72,8 +72,7 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
             true
         )
         setPosition(body.position.x - originX, body.position.y - originY)
-        effect.setPosition(centerX(), centerY())
-        effect.update(delta)
+        trail.update(centerX(), centerY())
     }
 
     private fun attachJoint() {
