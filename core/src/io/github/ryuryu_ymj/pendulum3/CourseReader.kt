@@ -26,9 +26,7 @@ class CourseReader {
             text = file.readString()
         } catch (e: GdxRuntimeException) {
             Gdx.app.error(
-                "my-error",
-                "cannot read course file at course/${"%02d".format(index)}",
-                e
+                "my-error", "cannot read course file at course/${"%02d".format(index)}", e
             )
             return
         }
@@ -77,12 +75,7 @@ class CourseReader {
                     val y = cells[1].toFloat()
                     val w = cells[2].toFloat()
                     val h = cells[3].toFloat()
-                    world.body {
-                        box(width = w, height = h) {
-                            restitution = 1f
-                        }
-                        position.set(x, y)
-                    }
+                    stage.addActor(Box(asset, world, x, y, w, h))
                 }
             }
         }

@@ -34,6 +34,7 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
         camera.position.setZero()
 
         world = createWorld()
+        stage.addActor(bg)
         course.readCourse(1, game.asset, world, stage, pivots)
 //        world.body(BodyDef.BodyType.StaticBody) {
 //            box(width = stage.width, height = 0.2f, position = vec2(0f, stage.height / 2 + 0.1f))
@@ -47,7 +48,6 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
 //        )
         player = Player(game.asset, world, pivots[0])
 
-        stage.addActor(bg)
         pivots.forEach { stage.addActor(it) }
         stage.addActor(player)
 
