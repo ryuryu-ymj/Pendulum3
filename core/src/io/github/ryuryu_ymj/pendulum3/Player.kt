@@ -4,17 +4,20 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.utils.Align
 import ktx.box2d.body
 import ktx.box2d.circle
 import ktx.box2d.distanceJointWith
 import kotlin.math.max
 
 class Player(asset: AssetManager, private val world: World, startPivot: Pivot) : Actor() {
+    private val tex = asset.get<TextureAtlas>("atlas/play.atlas").findRegion("player")
     val body: Body
     var nearestPivot: Pivot = startPivot
     var attachedPivot: Pivot? = null; private set
@@ -26,7 +29,11 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
 
     init {
         setSize(0.4f, 0.4f)
-        setPosition(startPivot.x + startPivot.originX + 3f, startPivot.y + startPivot.originY)
+        setOrigin(Align.center)
+        setPosition(
+            startPivot.x + startPivot.originX + 3f - originX,
+            startPivot.y + startPivot.originY - originY
+        )
         body = world.body(BodyDef.BodyType.DynamicBody) {
             circle(radius = width / 2) {
                 density = 1f
@@ -34,7 +41,7 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
                 restitution = 1f
             }
             fixedRotation = true
-            position.set(x + width / 2, y + height / 2)
+            position.set(centerX(), centerY())
         }
         body.applyLinearImpulse(0f, speed * body.mass, body.worldCenter.x, body.worldCenter.y, true)
         attachJoint()
@@ -43,9 +50,8 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-//        batch.end()
         trail.draw(batch)
-//        batch.begin()
+        batch.draw(tex, x, y, width, height)
     }
 
     override fun act(delta: Float) {

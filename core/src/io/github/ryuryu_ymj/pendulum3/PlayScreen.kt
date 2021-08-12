@@ -2,7 +2,6 @@ package io.github.ryuryu_ymj.pendulum3
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.World
@@ -35,7 +34,7 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
         camera.position.setZero()
 
         world = createWorld()
-        course.readCourse(1, world, stage, pivots)
+        course.readCourse(1, game.asset, world, stage, pivots)
 //        world.body(BodyDef.BodyType.StaticBody) {
 //            box(width = stage.width, height = 0.2f, position = vec2(0f, stage.height / 2 + 0.1f))
 //            box(width = stage.width, height = 0.2f, position = vec2(0f, -stage.height / 2 - 0.1f))

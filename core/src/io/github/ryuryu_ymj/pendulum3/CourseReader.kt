@@ -1,6 +1,7 @@
 package io.github.ryuryu_ymj.pendulum3
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.GdxRuntimeException
@@ -12,7 +13,13 @@ import ktx.math.vec2
 class CourseReader {
     var height = 0f
 
-    fun readCourse(index: Int, world: World, stage: Stage, pivots: GdxArray<Pivot>) {
+    fun readCourse(
+        index: Int,
+        asset: AssetManager,
+        world: World,
+        stage: Stage,
+        pivots: GdxArray<Pivot>
+    ) {
         val text: String
         try {
             val file = Gdx.files.internal("course/${"%02d".format(index)}")
@@ -52,7 +59,7 @@ class CourseReader {
                         box(
                             width = b,
                             height = height,
-                            position = vec2(stage.width / 2 + b / 2, height  / 2)
+                            position = vec2(stage.width / 2 + b / 2, height / 2)
                         ) {
                             restitution = 1f
                         }
@@ -62,7 +69,7 @@ class CourseReader {
                     val cells = line.split(' ')
                     val x = cells[0].toFloat()
                     val y = cells[1].toFloat()
-                    pivots.add(Pivot(world, x, y))
+                    pivots.add(Pivot(asset, world, x, y))
                 }
                 3 -> { // box
                     val cells = line.split(' ')
