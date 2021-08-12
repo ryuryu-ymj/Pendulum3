@@ -1,6 +1,7 @@
 package io.github.ryuryu_ymj.pendulum3
 
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
@@ -10,6 +11,7 @@ class MyGame : KtxGame<KtxScreen>() {
     val asset = AssetManager()
 
     override fun create() {
+        asset.load<Texture>("img/trail.png")
         asset.load<TextureAtlas>("atlas/play.atlas")
         asset.finishLoading()
 

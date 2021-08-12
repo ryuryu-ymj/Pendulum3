@@ -4,9 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.ParticleEffect
-import com.badlogic.gdx.graphics.g2d.PolygonBatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.World
@@ -42,7 +39,7 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
         body.applyLinearImpulse(0f, speed * body.mass, body.worldCenter.x, body.worldCenter.y, true)
         attachJoint()
 
-        trail = Trail(centerX(), centerY())
+        trail = Trail(asset, centerX(), centerY())
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
