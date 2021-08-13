@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
@@ -27,6 +28,7 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
 
     private val course = CourseReader()
     private lateinit var player: Player
+    private val target = Target(game.asset)
     private val pivots = gdxArrayOf<Pivot>()
     private val boxes = gdxArrayOf<Box>()
 
@@ -39,13 +41,16 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
         boxes.forEach { stage.addActor(it) }
         pivots.forEach { stage.addActor(it) }
         stage.addActor(player)
+        stage.addActor(target)
 
         camera.position.set(0f, stage.height / 2, 0f)
+        player.nearestPivot.let { target.setPosition(it.centerX(), it.centerY(), Align.center) }
 
         Gdx.input.inputProcessor = stage
     }
 
     override fun hide() {
+        stage.clear()
         world.dispose()
         Gdx.input.inputProcessor = null
     }
@@ -74,6 +79,7 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
 
         pivots.minByOrNull { it.body.position.dst2(player.body.position) }?.let {
             player.nearestPivot = it
+            target.setPosition(it.centerX(), it.centerY(), Align.center)
         }
     }
 
@@ -82,7 +88,7 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
         debugRenderer.dispose()
         stage.dispose()
         batch.dispose()
-        if (game.shownScreen === this) hide()
+        if (game.shownScreen === this) world.dispose()
     }
 }
 

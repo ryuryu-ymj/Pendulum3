@@ -20,10 +20,10 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
     private val tex = asset.get<TextureAtlas>("atlas/play.atlas").findRegion("player")
     val body: Body
     var nearestPivot: Pivot = startPivot
-    var attachedPivot: Pivot? = null; private set
+    private var attachedPivot: Pivot? = null
     private var joint: DistanceJoint? = null
-    val isAttachedToPivot; get() = joint != null
-    private val speed = 5f
+//    val isAttachedToPivot; get() = joint != null
+    private val speed = 3f
 
     private val trail: Trail
 
@@ -64,8 +64,7 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
         }
 
         val l = body.linearVelocity.len()
-        val k = (l - speed) * 10
-//        println("speed:$l, force:(${-k * body.linearVelocity.x / l * body.mass},${-k * body.linearVelocity.y / l * body.mass})")
+        val k = (l - speed) * 5
 //        println(l)
         body.applyForce(
             -k * body.linearVelocity.x / l * body.mass,
