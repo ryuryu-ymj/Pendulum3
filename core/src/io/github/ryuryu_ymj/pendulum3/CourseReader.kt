@@ -3,7 +3,6 @@ package io.github.ryuryu_ymj.pendulum3
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.GdxRuntimeException
 import ktx.box2d.body
 import ktx.box2d.box
@@ -17,8 +16,9 @@ class CourseReader {
         index: Int,
         asset: AssetManager,
         world: World,
-        stage: Stage,
-        pivots: GdxArray<Pivot>
+        pivots: GdxArray<Pivot>,
+        boxes: GdxArray<Box>,
+        stageWidth: Float
     ) {
         val text: String
         try {
@@ -41,23 +41,23 @@ class CourseReader {
                     height = line.toFloat()
                     val b = 0.2f
                     world.body {
-                        box(width = stage.width, height = b, position = vec2(0f, -b / 2)) {
+                        box(width = stageWidth, height = b, position = vec2(0f, -b / 2)) {
                             restitution = 1f
                         }
-                        box(width = stage.width, height = b, position = vec2(0f, height + b / 2)) {
+                        box(width = stageWidth, height = b, position = vec2(0f, height + b / 2)) {
                             restitution = 1f
                         }
                         box(
                             width = b,
                             height = height,
-                            position = vec2(-stage.width / 2 - b / 2, height / 2)
+                            position = vec2(-stageWidth / 2 - b / 2, height / 2)
                         ) {
                             restitution = 1f
                         }
                         box(
                             width = b,
                             height = height,
-                            position = vec2(stage.width / 2 + b / 2, height / 2)
+                            position = vec2(stageWidth / 2 + b / 2, height / 2)
                         ) {
                             restitution = 1f
                         }
@@ -75,7 +75,7 @@ class CourseReader {
                     val y = cells[1].toFloat()
                     val w = cells[2].toFloat()
                     val h = cells[3].toFloat()
-                    stage.addActor(Box(asset, world, x, y, w, h))
+                    boxes.add(Box(asset, world, x, y, w, h))
                 }
             }
         }

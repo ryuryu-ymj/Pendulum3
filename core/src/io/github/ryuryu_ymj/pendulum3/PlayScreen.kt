@@ -22,36 +22,25 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
     private val stage = Stage(viewport, batch)
     private val bg = BackGround(stage.width, stage.height)
 
-    //    private val gravity = vec2(0f, -120f)
     private lateinit var world: World
     private val debugRenderer = Box2DDebugRenderer()
 
     private val course = CourseReader()
     private lateinit var player: Player
     private val pivots = gdxArrayOf<Pivot>()
+    private val boxes = gdxArrayOf<Box>()
 
     override fun show() {
-        camera.position.setZero()
-
         world = createWorld()
-        stage.addActor(bg)
-        course.readCourse(1, game.asset, world, stage, pivots)
-//        world.body(BodyDef.BodyType.StaticBody) {
-//            box(width = stage.width, height = 0.2f, position = vec2(0f, stage.height / 2 + 0.1f))
-//            box(width = stage.width, height = 0.2f, position = vec2(0f, -stage.height / 2 - 0.1f))
-//            box(width = 0.2f, height = stage.height, position = vec2(stage.width / 2 + 0.1f, 0f))
-//            box(width = 0.2f, height = stage.height, position = vec2(-stage.width / 2 - 0.1f, 0f))
-//        }
-//        pivots.add(
-//            Pivot(world, 0f, 4f),
-//            Pivot(world, 0f, 10f),
-//        )
+        course.readCourse(1, game.asset, world, pivots, boxes, stage.width)
         player = Player(game.asset, world, pivots[0])
 
+        stage.addActor(bg)
+        boxes.forEach { stage.addActor(it) }
         pivots.forEach { stage.addActor(it) }
         stage.addActor(player)
 
-        camera.position.y = stage.height / 2
+        camera.position.set(0f, stage.height / 2, 0f)
 
         Gdx.input.inputProcessor = stage
     }
@@ -66,12 +55,13 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
     }
 
     override fun render(delta: Float) {
+        // draw
         stage.draw()
         debugRenderer.render(world, camera.combined)
 
+        // act
         world.step(1f / 60, 6, 2)
         stage.act()
-
 
         if (camera.position.y > course.height - stage.height / 2) {
             camera.position.y = course.height - stage.height / 2
@@ -92,7 +82,7 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
         debugRenderer.dispose()
         stage.dispose()
         batch.dispose()
-//        world.dispose()
+        if (game.shownScreen === this) hide()
     }
 }
 
