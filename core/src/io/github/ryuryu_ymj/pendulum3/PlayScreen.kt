@@ -31,15 +31,17 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
     private val target = Target(game.asset)
     private val pivots = gdxArrayOf<Pivot>()
     private val boxes = gdxArrayOf<Box>()
+    private val coins = gdxArrayOf<Coin>()
 
     override fun show() {
         world = createWorld()
-        course.readCourse(1, game.asset, world, pivots, boxes, stage.width)
+        course.readCourse(1, game.asset, world, pivots, boxes, coins, stage.width)
         player = Player(game.asset, world, pivots[0])
 
         stage.addActor(bg)
         boxes.forEach { stage.addActor(it) }
         pivots.forEach { stage.addActor(it) }
+        coins.forEach { stage.addActor(it) }
         stage.addActor(player)
         stage.addActor(target)
 
@@ -50,6 +52,9 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
     }
 
     override fun hide() {
+        pivots.clear()
+        boxes.clear()
+        coins.clear()
         stage.clear()
         world.dispose()
         Gdx.input.inputProcessor = null

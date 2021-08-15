@@ -5,9 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.physics.box2d.Body
-import com.badlogic.gdx.physics.box2d.BodyDef
-import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
@@ -22,7 +20,8 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
     var nearestPivot: Pivot = startPivot
     private var attachedPivot: Pivot? = null
     private var joint: DistanceJoint? = null
-//    val isAttachedToPivot; get() = joint != null
+
+    //    val isAttachedToPivot; get() = joint != null
     private val speed = 3f
 
     private val trail: Trail
@@ -45,6 +44,30 @@ class Player(asset: AssetManager, private val world: World, startPivot: Pivot) :
         }
         body.applyLinearImpulse(0f, speed * body.mass, body.worldCenter.x, body.worldCenter.y, true)
         attachJoint()
+
+        world.setContactListener(object : ContactListener {
+            override fun beginContact(contact: Contact) {
+                withCoin(contact.fixtureA, contact.fixtureB)
+                withCoin(contact.fixtureB, contact.fixtureA)
+            }
+
+            private fun withCoin(fixture1: Fixture, fixture2: Fixture) {
+                if (fixture1.body === body) {
+                    fixture2.body.userData.let {
+                        if (it is Coin && !it.isObtained) {
+                            it.obtain()
+                        }
+                    }
+                }
+            }
+
+            override fun endContact(contact: Contact?) {
+            }
+
+            override fun preSolve(contact: Contact?, oldManifold: Manifold?) {}
+
+            override fun postSolve(contact: Contact?, impulse: ContactImpulse?) {}
+        })
 
         trail = Trail(asset, centerX(), centerY())
     }

@@ -18,6 +18,7 @@ class CourseReader {
         world: World,
         pivots: GdxArray<Pivot>,
         boxes: GdxArray<Box>,
+        coins: GdxArray<Coin>,
         stageWidth: Float
     ) {
         val text: String
@@ -76,6 +77,12 @@ class CourseReader {
                     val w = cells[2].toFloat()
                     val h = cells[3].toFloat()
                     boxes.add(Box(asset, world, x, y, w, h))
+                }
+                4 -> { // coin
+                    val cells = line.split(' ')
+                    val x = cells[0].toFloat()
+                    val y = cells[1].toFloat()
+                    coins.add(Coin(asset, world, x, y))
                 }
             }
         }
