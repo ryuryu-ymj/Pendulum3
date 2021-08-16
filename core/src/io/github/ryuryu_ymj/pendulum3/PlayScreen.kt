@@ -2,7 +2,6 @@ package io.github.ryuryu_ymj.pendulum3
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -12,16 +11,18 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
 import ktx.collections.gdxArrayOf
+import kotlin.math.min
 
 class PlayScreen(private val game: MyGame) : KtxScreen {
-    private val batch = SpriteBatch()
     private val camera = OrthographicCamera(9f, 16f)
-    private val viewport = FitViewport(
-        camera.viewportWidth,
-        camera.viewportHeight, camera
-    )
-    private val stage = Stage(viewport, batch)
+    private val viewport = FitViewport(camera.viewportWidth, camera.viewportHeight, camera)
+    private val stage = Stage(viewport, game.batch)
     private val bg = BackGround(stage.width, stage.height)
+
+    private val uiCamera = OrthographicCamera(2160f, 3840f)
+    private val uiViewport = FitViewport(uiCamera.viewportWidth, uiCamera.viewportHeight, uiCamera)
+    private val uiStage = Stage(uiViewport, game.batch)
+    private val playUI = PlayUI(uiStage)
 
     private lateinit var world: World
     private val debugRenderer = Box2DDebugRenderer()
@@ -62,16 +63,21 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
 
     override fun resize(width: Int, height: Int) {
         viewport.update(width, height)
+        uiViewport.update(width, height)
     }
 
     override fun render(delta: Float) {
         // draw
         stage.draw()
         debugRenderer.render(world, camera.combined)
+        uiStage.draw()
 
         // act
-        world.step(1f / 60, 6, 2)
-        stage.act()
+        val d = min(Gdx.graphics.deltaTime, 1 / 30f)
+        world.step(d, 6, 2)
+        stage.act(d)
+        uiStage.act(d)
+        playUI.update(d)
 
         if (camera.position.y > course.height - stage.height / 2) {
             camera.position.y = course.height - stage.height / 2
@@ -92,7 +98,8 @@ class PlayScreen(private val game: MyGame) : KtxScreen {
         bg.dispose()
         debugRenderer.dispose()
         stage.dispose()
-        batch.dispose()
+        uiStage.dispose()
+//        batch.dispose()
         if (game.shownScreen === this) world.dispose()
     }
 }

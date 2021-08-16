@@ -35,5 +35,7 @@ class Coin(asset: AssetManager, world: World, centerX: Float, centerY: Float) : 
 
     fun obtain() {
         isObtained = true
+        obtainCoin()
+        remove()
     }
 }

@@ -36,6 +36,7 @@ allprojects {
         google()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -100,5 +101,6 @@ project(":core") {
         api "io.github.libktx:ktx-assets:$ktxVersion"
         api "io.github.libktx:ktx-scene2d:$ktxVersion"
         api "io.github.libktx:ktx-box2d:$ktxVersion"
+        implementation 'com.github.raeleus:stripe:0.0.3'
     }
 }
